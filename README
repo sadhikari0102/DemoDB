@@ -1,14 +1,20 @@
-1. Configure test.cat to include all the table paths
-2. Execute ./a4-2.out and enter the desired query.
-3. Below are some test queries that can be entered:
-CREATE TABLE supplier (s_suppkey INTEGER,s_name STRING,s_address STRING,s_nationkey INTEGER,s_phone STRING,s_acctbal DOUBLE,s_comment STRING) AS SORTED ON s_suppkey
 
+DemoDB is a single-user database management system that supports a subset of SQL and some basic relational algebra operations (select, join, groupby, etc). The database has been designed and tested with the standards of TPC-H data sample, and the sample input tables (.tbl format) can be generated using the open source project available on https://github.com/electrum/tpch-dbgen.
+
+Once you have the '.tbl' files generated, place them in the 'tables' sub-directory (this can be configured to another directory in file 'test.cat'). you can create and process corresponding relations in the database using simple SQL commands.
+
+Below are the steps to start and run the database once you have the input files in place.
+
+1. Configure test.cat to include all the table paths.
+2. Compile the project using 'make' command.
+3. Execute ./a4-2.out and enter the desired query, as the console asks for it.
+4. Currently, the database supports two storage formates, HEAP and SORTED, which can be selected while creating the table. Additionally, in the SORTED format, you need to provide the attributes the relation need to be sorted on.
+
+5. Below are some test queries that can be entered:
+
+CREATE TABLE supplier (s_suppkey INTEGER,s_name STRING,s_address STRING,s_nationkey INTEGER,s_phone STRING,s_acctbal DOUBLE,s_comment STRING) AS HEAP
 CREATE TABLE partsupp (ps_partkey INTEGER,ps_suppkey INTEGER,ps_availqty INTEGER,ps_supplycost DOUBLE,ps_comment STRING) AS SORTED ON ps_partkey
-
-
 CREATE TABLE part (p_partkey INTEGER,p_name STRING,p_mfgr STRING,p_brand STRING,p_type STRING,p_size INTEGER,p_container STRING,p_retailprice DOUBLE,p_comment STRING) AS SORTED ON p_partkey
-
-
 CREATE TABLE region (r_regionkey INTEGER,r_name STRING,r_comment STRING) AS SORTED ON r_regionkey
 
 INSERT 'supplier.tbl' INTO supplier
@@ -17,7 +23,23 @@ INSERT 'part.tbl' INTO part
 INSERT 'region.tbl' INTO region
 
 SELECT ps.ps_suppkey FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03)
-
 SELECT p.p_partkey, p.p_name, p.p_retailprice FROM part AS p WHERE (p.p_retailprice > 931.01) AND (p.p_retailprice < 931.3)
-
 SELECT SUM (s.s_acctbal + (s.s_acctbal * 1.05)) FROM supplier AS s WHERE (s.s_acctbal > -1111111.0)
+
+Few points to remember:
+1. Tables need to be created using CREATE before inserting using INSERT or selecting using SELECT.
+2. Once the tables are created using create, the data files are generated in subdirectory named 'output' (again, can be configured in 'test.cat'). Also, correspoding table's schema data is updated in 'catalog'.
+3. Always use alias in the queries, even when one relation is being used only once:
+	example: SELECT ps.ps_suppkey FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03) will work,
+		 SELECT ps_suppkey FROM partsupp WHERE (ps_supplycost < 1.03) won't.
+
+FUTURE:
+Currently, this has been designed to support single user, which can be modified to fit in multiple users by introducing more concurrency controlled programming.
+
+In case someone wants to contribute, below is the overall logic of the current development:
+1. CREATE Table uses DBFile (can be either HEAP or SORTED), which represents the data as stored in the disc. In this case, we use row-major format to store the data in the files.
+2. Additionally, if SORTED files are being used, we are using a Pipe and a BigQ to sort(using External Merge Sort) the incoming data before storing it on the disc. Alongside, metadata related to filetypes, order and runlength is store in .txt files.
+3. INSERT also uses load function from DBFile to bulk load the data from .tbl files to DBFiles (.bin).
+4. SELECT Query is parsed into different trees structures storing different parts of queries (ANDList contains WHERE condition, attstoSelect contains SELECT attributes, etc)
+5. These trees are used in the QueryPlan, in order to create a final hierarchical tree, where each leaf node represents a select on single relation used in the query. The next level is JOIN (in case multiples relations are used). Next is the GROUPBY node which groups the tuples based on grouping attributes. One level up are the functions being used in the query (SUM, other arithmatic operations, etc). Finally, the Writeout node represents the final putput being printed to the screen or output files.
+6. At every step of the queryplan, Statistics is being calculated. Calculated statistics is the number of tuples returned by the selected relation or set of relations. Based on these statistics, among different combinations, one cheapest(based on statistical data) plan is being selected and executed for result.
