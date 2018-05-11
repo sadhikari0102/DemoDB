@@ -1,0 +1,78 @@
+relName customer 150000
+attributes
+rattrName c_custkey distinct 150000
+rattrName c_name distinct 150000
+rattrName c_address distinct 150000
+rattrName c_nationkey distinct 25
+rattrName c_phone distinct 150000
+rattrName c_acctbal distinct 140187
+rattrName c_mktsegment distinct 5
+rattrName c_comment distinct 149968
+relName lineitem 6001215
+attributes
+rattrName l_orderkey distinct 1500000
+rattrName l_partkey distinct 200000
+rattrName l_suppkey distinct 10000
+rattrName l_linenumber distinct 7
+rattrName l_quantity distinct 50
+rattrName l_extendedprice distinct 933900
+rattrName l_discount distinct 11
+rattrName l_tax distinct 9
+rattrName l_returnflag distinct 3
+rattrName l_linestatus distinct 2
+rattrName l_shipdate distinct 2526
+rattrName l_commitdate distinct 2466
+rattrName l_receiptdate distinct 2554
+rattrName l_shipinstruct distinct 4
+rattrName l_shipmode distinct 7
+rattrName l_comment distinct 4580667
+relName nation 25
+attributes
+rattrName n_nationkey distinct 25
+rattrName n_name distinct 25
+rattrName n_regionkey distinct 5
+rattrName n_comment distinct 25
+relName orders 1500000
+attributes
+rattrName o_orderkey distinct 1500000
+rattrName o_custkey distinct 99996
+rattrName o_orderstatus distinct 3
+rattrName o_totalprice distinct 1464556
+rattrName o_orderdate distinct 2406
+rattrName o_orderPriority distinct 5
+rattrName o_clerk distinct 1000
+rattrName o_shipPriority distinct 1
+rattrName o_comment distinct 1482071
+relName part 200000
+attributes
+rattrName p_partkey distinct 200000
+rattrName p_name distinct 199996
+rattrName p_mfgr distinct 5
+rattrName p_brand distinct 25
+rattrName p_type distinct 150
+rattrName p_size distinct 50
+rattrName p_container distinct 40
+rattrName p_retailprice distinct 20899
+rattrName p_comment distinct 131753
+relName partsupp 800000
+attributes
+rattrName ps_partkey distinct 200000
+rattrName ps_suppkey distinct 10000
+rattrName ps_availqty distinct 9999
+rattrName ps_supplycost distinct 99865
+rattrName ps_comment distinct 799124
+relName region 5
+attributes
+rattrName r_name distinct 5
+rattrName r_regionkey distinct 5
+rattrName r_comment distinct 5
+relName supplier 10000
+attributes
+rattrName s_suppkey distinct 10000
+rattrName s_name distinct 10000
+rattrName s_address distinct 10000
+rattrName s_nationkey distinct 25
+rattrName s_phone distinct 10000
+rattrName s_acctbal distinct 9955
+rattrName s_comment distinct 10000
+eof

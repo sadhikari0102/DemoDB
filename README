@@ -1,0 +1,23 @@
+1. Configure test.cat to include all the table paths
+2. Execute ./a4-2.out and enter the desired query.
+3. Below are some test queries that can be entered:
+CREATE TABLE supplier (s_suppkey INTEGER,s_name STRING,s_address STRING,s_nationkey INTEGER,s_phone STRING,s_acctbal DOUBLE,s_comment STRING) AS SORTED ON s_suppkey
+
+CREATE TABLE partsupp (ps_partkey INTEGER,ps_suppkey INTEGER,ps_availqty INTEGER,ps_supplycost DOUBLE,ps_comment STRING) AS SORTED ON ps_partkey
+
+
+CREATE TABLE part (p_partkey INTEGER,p_name STRING,p_mfgr STRING,p_brand STRING,p_type STRING,p_size INTEGER,p_container STRING,p_retailprice DOUBLE,p_comment STRING) AS SORTED ON p_partkey
+
+
+CREATE TABLE region (r_regionkey INTEGER,r_name STRING,r_comment STRING) AS SORTED ON r_regionkey
+
+INSERT 'supplier.tbl' INTO supplier
+INSERT 'partsupp.tbl' INTO partsupp
+INSERT 'part.tbl' INTO part
+INSERT 'region.tbl' INTO region
+
+SELECT ps.ps_suppkey FROM partsupp AS ps WHERE (ps.ps_supplycost < 1.03)
+
+SELECT p.p_partkey, p.p_name, p.p_retailprice FROM part AS p WHERE (p.p_retailprice > 931.01) AND (p.p_retailprice < 931.3)
+
+SELECT SUM (s.s_acctbal + (s.s_acctbal * 1.05)) FROM supplier AS s WHERE (s.s_acctbal > -1111111.0)
